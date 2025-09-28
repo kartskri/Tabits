@@ -1,5 +1,5 @@
 // src/screens/HabitHubScreen.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
     View,
     Text,
@@ -20,71 +20,25 @@ type Suggestion = {
     image: string;
 };
 
-const mockHabitsApiCall = (): Promise<Habit[]> => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve([
-                {
-                    id: "1",
-                    title: "Meditate",
-                    status: "Complete",
-                    xp: 10,
-                    image: "https://cdn-icons-png.flaticon.com/512/2904/2904972.png",
-                    favorite: true,
-                },
-                {
-                    id: "2",
-                    title: "Journal",
-                    status: "Incomplete",
-                    xp: 5,
-                    image: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                    favorite: false,
-                },
-                {
-                    id: "3",
-                    title: "Ride a Bike",
-                    status: "Complete",
-                    xp: 5,
-                    image: "https://cdn-icons-png.flaticon.com/512/3197/3197980.png",
-                    favorite: false,
-                },
-            ]);
-        }, 700);
-    });
-};
-
-const mockSuggestionsApiCall = (): Promise<Suggestion[]> => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve([
-                {
-                    id: "s1",
-                    title: "30 Minute Walk",
-                    image: "https://cdn-icons-png.flaticon.com/512/1904/1904425.png",
-                },
-                {
-                    id: "s2",
-                    title: "Eat Fruits",
-                    image: "https://cdn-icons-png.flaticon.com/512/415/415682.png",
-                },
-            ]);
-        }, 500);
-    });
-};
+const defaultSuggestions: Suggestion[] = [
+    {
+        id: "s1",
+        title: "30 Minute Walk",
+        image: "https://cdn-icons-png.flaticon.com/512/1904/1904425.png",
+    },
+    {
+        id: "s2",
+        title: "Eat Fruits",
+        image: "https://cdn-icons-png.flaticon.com/512/415/415682.png",
+    },
+];
 
 export default function HabitHubScreen() {
-    const { habits, setHabits, addHabit, updateHabit } = useHabitStore();
-    const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+    const { habits, addHabit, updateHabit } = useHabitStore();
+    const [suggestions] = useState<Suggestion[]>(defaultSuggestions);
     const [modalVisible, setModalVisible] = useState(false);
     const [newHabitTitle, setNewHabitTitle] = useState("");
     const [newHabitXP, setNewHabitXP] = useState("");
-
-    useEffect(() => {
-        if (habits.length === 0) {
-            mockHabitsApiCall().then(setHabits);
-        }
-        mockSuggestionsApiCall().then(setSuggestions);
-    }, []);
 
     const handleAddHabit = () => {
         if (newHabitTitle && newHabitXP) {

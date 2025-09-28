@@ -1,55 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, FlatList, Modal, TextInput, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useDeadlineStore, type Deadline } from '@/store/deadlineStore';
 import { useScheduleStore, type ScheduleItem } from '@/store/scheduleStore';
 
-const mockApiCall = (): Promise<Deadline[]> => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve([
-                { id: "1", title: "Math HW", date: "11/01" },
-                { id: "2", title: "Chemistry Project", date: "11/04" },
-                { id: "3", title: "English Test", date: "11/12" },
-            ]);
-        }, 1000);
-    });
-};
-
-const mockScheduleApiCall = (): Promise<ScheduleItem[]> => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve([
-                { id: "W", name: "Wake Up", time: "7:00 AM" },
-                { id: "E", name: "Eat Breakfast", time: "7:30 AM" },
-                { id: "S", name: "School", time: "8:00 AM" },
-                { id: "P", name: "Project", time: "4:00 PM" },
-                { id: "D", name: "Dinner", time: "6:30 PM" },
-            ]);
-        }, 800);
-    });
-};
-
-
-
 export default function ScheduleScreen() {
-    const { deadlines, setDeadlines, addDeadline } = useDeadlineStore();
-    const { schedule, setSchedule, addScheduleItem } = useScheduleStore();
+    const { deadlines, addDeadline, removeDeadline } = useDeadlineStore();
+    const { schedule, addScheduleItem } = useScheduleStore();
     const [modalVisible, setModalVisible] = useState(false);
     const [deadlineModalVisible, setDeadlineModalVisible] = useState(false);
     const [newScheduleName, setNewScheduleName] = useState("");
     const [newScheduleTime, setNewScheduleTime] = useState("");
     const [newDeadlineTitle, setNewDeadlineTitle] = useState("");
     const [newDeadlineDate, setNewDeadlineDate] = useState("");
-
-    useEffect(() => {
-        if (deadlines.length === 0) {
-            mockApiCall().then(setDeadlines);
-        }
-        if (schedule.length === 0) {
-            mockScheduleApiCall().then(setSchedule);
-        }
-    }, []);
 
     const handleAddScheduleItem = () => {
         if (newScheduleName && newScheduleTime) {
@@ -95,7 +58,9 @@ export default function ScheduleScreen() {
                 <View key={deadline.id} style={styles.deadlineCard}>
                     <Text style={styles.deadlineText}>{deadline.title}</Text>
                     <Text style={styles.deadlineDate}>{deadline.date}</Text>
-                    <Ionicons name="checkmark" size={20} color="#007AFF" />
+                    <TouchableOpacity onPress={() => removeDeadline(deadline.id)}>
+                        <Ionicons name="checkmark-circle-outline" size={20} color="#ccc" />
+                    </TouchableOpacity>
                 </View>
             ))}
 

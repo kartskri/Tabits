@@ -13,8 +13,14 @@ interface DeadlineStore {
   removeDeadline: (id: string) => void;
 }
 
+const defaultDeadlines: Deadline[] = [
+  { id: "1", title: "Math HW", date: "11/01" },
+  { id: "2", title: "Chemistry Project", date: "11/04" },
+  { id: "3", title: "English Test", date: "11/12" },
+];
+
 export const useDeadlineStore = create<DeadlineStore>((set) => ({
-  deadlines: [],
+  deadlines: defaultDeadlines,
   setDeadlines: (deadlines) => set({ deadlines }),
   addDeadline: (deadline) => set((state) => ({ 
     deadlines: [...state.deadlines, deadline] 
