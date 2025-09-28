@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -7,15 +7,27 @@ type WeeklyProgress = {
     value: number; // percentage (0–1)
 };
 
-const weeklyData: WeeklyProgress[] = [
-    { day: "Mon", value: 0 },
-    { day: "Tue", value: 0.2 },
-    { day: "Wed", value: 0.5 },
-    { day: "Thu", value: 0.7 },
-    { day: "Fri", value: 1 },
-];
+const mockWeeklyProgressApiCall = (): Promise<WeeklyProgress[]> => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve([
+                { day: "Mon", value: 0 },
+                { day: "Tue", value: 0.2 },
+                { day: "Wed", value: 0.5 },
+                { day: "Thu", value: 0.7 },
+                { day: "Fri", value: 1 },
+            ]);
+        }, 900);
+    });
+};
 
 const ProgressScreen = () => {
+    const [weeklyData, setWeeklyData] = useState<WeeklyProgress[]>([]);
+
+    useEffect(() => {
+        mockWeeklyProgressApiCall().then(setWeeklyData);
+    }, []);
+
     return (
         <View style={styles.container}>
             {/* Header */}

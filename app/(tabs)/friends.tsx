@@ -1,7 +1,7 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
 
 type Friend = {
@@ -10,13 +10,25 @@ type Friend = {
     streak: string;
 };
 
-const friends: Friend[] = [
-    { id: "A", name: "Friend A", streak: "5 days" },
-    { id: "B", name: "Friend B", streak: "2 days" },
-    { id: "C", name: "Friend C", streak: "N/A" },
-];
+const mockFriendsApiCall = (): Promise<Friend[]> => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve([
+                { id: "A", name: "Friend A", streak: "5 days" },
+                { id: "B", name: "Friend B", streak: "2 days" },
+                { id: "C", name: "Friend C", streak: "N/A" },
+            ]);
+        }, 600);
+    });
+};
 
 export default function FriendsScreen() {
+    const [friends, setFriends] = useState<Friend[]>([]);
+
+    useEffect(() => {
+        mockFriendsApiCall().then(setFriends);
+    }, []);
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>My Profile</Text>

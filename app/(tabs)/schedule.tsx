@@ -1,41 +1,93 @@
-import React from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, FlatList, Modal, TextInput, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useDeadlineStore, type Deadline } from '@/store/deadlineStore';
+import { useScheduleStore, type ScheduleItem } from '@/store/scheduleStore';
 
-type Deadline = {
-    id: string;
-    title: string;
-    date: string;
+const mockApiCall = (): Promise<Deadline[]> => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve([
+                { id: "1", title: "Math HW", date: "11/01" },
+                { id: "2", title: "Chemistry Project", date: "11/04" },
+                { id: "3", title: "English Test", date: "11/12" },
+            ]);
+        }, 1000);
+    });
 };
 
-type ScheduleItem = {
-    id: string;
-    name: string;
-    time: string;
+const mockScheduleApiCall = (): Promise<ScheduleItem[]> => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve([
+                { id: "W", name: "Wake Up", time: "7:00 AM" },
+                { id: "E", name: "Eat Breakfast", time: "7:30 AM" },
+                { id: "S", name: "School", time: "8:00 AM" },
+                { id: "P", name: "Project", time: "4:00 PM" },
+                { id: "D", name: "Dinner", time: "6:30 PM" },
+            ]);
+        }, 800);
+    });
 };
 
-const deadlines: Deadline[] = [
-    { id: "1", title: "Math HW", date: "11/01" },
-    { id: "2", title: "Chemistry Project", date: "11/04" },
-    { id: "3", title: "English Test", date: "11/12" },
-];
 
-const schedule: ScheduleItem[] = [
-    { id: "W", name: "Wake Up", time: "7:00 AM" },
-    { id: "E", name: "Eat Breakfast", time: "7:30 AM" },
-    { id: "S", name: "School", time: "8:00 AM" },
-    { id: "P", name: "Project", time: "4:00 PM" },
-    { id: "D", name: "Dinner", time: "6:30 PM" },
-];
 
 export default function ScheduleScreen() {
+    const { deadlines, setDeadlines, addDeadline } = useDeadlineStore();
+    const { schedule, setSchedule, addScheduleItem } = useScheduleStore();
+    const [modalVisible, setModalVisible] = useState(false);
+    const [deadlineModalVisible, setDeadlineModalVisible] = useState(false);
+    const [newScheduleName, setNewScheduleName] = useState("");
+    const [newScheduleTime, setNewScheduleTime] = useState("");
+    const [newDeadlineTitle, setNewDeadlineTitle] = useState("");
+    const [newDeadlineDate, setNewDeadlineDate] = useState("");
+
+    useEffect(() => {
+        if (deadlines.length === 0) {
+            mockApiCall().then(setDeadlines);
+        }
+        if (schedule.length === 0) {
+            mockScheduleApiCall().then(setSchedule);
+        }
+    }, []);
+
+    const handleAddScheduleItem = () => {
+        if (newScheduleName && newScheduleTime) {
+            const newItem: ScheduleItem = {
+                id: newScheduleName.charAt(0).toUpperCase(),
+                name: newScheduleName,
+                time: newScheduleTime,
+            };
+            addScheduleItem(newItem);
+            setNewScheduleName("");
+            setNewScheduleTime("");
+            setModalVisible(false);
+        }
+    };
+
+    const addDeadlineItem = () => {
+        if (newDeadlineTitle && newDeadlineDate) {
+            const newItem: Deadline = {
+                id: (deadlines.length + 1).toString(),
+                title: newDeadlineTitle,
+                date: newDeadlineDate,
+            };
+            addDeadline(newItem);
+            setNewDeadlineTitle("");
+            setNewDeadlineDate("");
+            setDeadlineModalVisible(false);
+        }
+    };
+
     return (
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
                 <Ionicons name="settings-sharp" size={26} color="#007AFF" />
                 <Text style={styles.headerTitle}>Deadlines</Text>
-                <Ionicons name="add" size={28} color="#007AFF" />
+                <TouchableOpacity onPress={() => setDeadlineModalVisible(true)}>
+                    <Ionicons name="add" size={28} color="#007AFF" />
+                </TouchableOpacity>
             </View>
 
             {/* Deadlines */}
@@ -50,7 +102,9 @@ export default function ScheduleScreen() {
             {/* Schedule Header */}
             <View style={styles.scheduleHeader}>
                 <Text style={styles.sectionTitle}>My Schedule</Text>
-                <Ionicons name="add" size={22} color="#007AFF" />
+                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                    <Ionicons name="add" size={22} color="#007AFF" />
+                </TouchableOpacity>
             </View>
             <Text style={styles.dateText}>DD/MMM</Text>
 
@@ -68,6 +122,64 @@ export default function ScheduleScreen() {
                     </View>
                 )}
             />
+
+            {/* Modal */}
+            <Modal visible={modalVisible} transparent animationType="slide">
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Add Schedule Item</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Activity name"
+                            value={newScheduleName}
+                            onChangeText={setNewScheduleName}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Time (e.g., 9:00 AM)"
+                            value={newScheduleTime}
+                            onChangeText={setNewScheduleTime}
+                        />
+                        <View style={styles.modalButtons}>
+                            <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
+                                <Text style={styles.cancelText}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.addButton} onPress={handleAddScheduleItem}>
+                                <Text style={styles.addText}>Add</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Deadline Modal */}
+            <Modal visible={deadlineModalVisible} transparent animationType="slide">
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Add Deadline</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Deadline title"
+                            value={newDeadlineTitle}
+                            onChangeText={setNewDeadlineTitle}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Date (e.g., 11/15)"
+                            value={newDeadlineDate}
+                            onChangeText={setNewDeadlineDate}
+                        />
+                        <View style={styles.modalButtons}>
+                            <TouchableOpacity style={styles.cancelButton} onPress={() => setDeadlineModalVisible(false)}>
+                                <Text style={styles.cancelText}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.addButton} onPress={addDeadlineItem}>
+                                <Text style={styles.addText}>Add</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -145,6 +257,60 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     scheduleTime: {
+        fontWeight: "600",
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0,0.5)",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    modalContent: {
+        backgroundColor: "white",
+        borderRadius: 10,
+        padding: 20,
+        width: "80%",
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: "600",
+        marginBottom: 15,
+        textAlign: "center",
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 8,
+        padding: 12,
+        marginBottom: 15,
+        fontSize: 16,
+    },
+    modalButtons: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    cancelButton: {
+        flex: 1,
+        padding: 12,
+        marginRight: 10,
+        borderRadius: 8,
+        backgroundColor: "#f0f0f0",
+    },
+    addButton: {
+        flex: 1,
+        padding: 12,
+        marginLeft: 10,
+        borderRadius: 8,
+        backgroundColor: "#007AFF",
+    },
+    cancelText: {
+        textAlign: "center",
+        fontSize: 16,
+    },
+    addText: {
+        textAlign: "center",
+        fontSize: 16,
+        color: "white",
         fontWeight: "600",
     },
 });

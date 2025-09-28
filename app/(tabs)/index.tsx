@@ -1,31 +1,45 @@
 // src/screens/HomeScreen.tsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, FlatList, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useDeadlineStore, type Deadline } from '@/store/deadlineStore';
+import { useTaskStore, type Task } from '@/store/taskStore';
 
-type Deadline = {
-  id: string;
-  title: string;
-  date: string;
+const mockDeadlinesApiCall = (): Promise<Deadline[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve([
+        { id: "1", title: "Math HW", date: "11/01" },
+        { id: "2", title: "Chemistry Project", date: "11/04" },
+      ]);
+    }, 800);
+  });
 };
 
-type Task = {
-  id: string;
-  name: string;
-  time: string;
+const mockTasksApiCall = (): Promise<Task[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve([
+        { id: "P", name: "Project", time: "4:00 PM" },
+        { id: "D", name: "Dinner", time: "6:30 PM" },
+      ]);
+    }, 600);
+  });
 };
-
-const deadlines: Deadline[] = [
-  { id: "1", title: "Math HW", date: "11/01" },
-  { id: "2", title: "Chemistry Project", date: "11/04" },
-];
-
-const tasks: Task[] = [
-  { id: "P", name: "Project", time: "4:00 PM" },
-  { id: "D", name: "Dinner", time: "6:30 PM" },
-];
 
 export default function HomeScreen() {
+  const { deadlines, setDeadlines } = useDeadlineStore();
+  const { tasks, setTasks } = useTaskStore();
+
+  useEffect(() => {
+    if (deadlines.length === 0) {
+      mockDeadlinesApiCall().then(setDeadlines);
+    }
+    if (tasks.length === 0) {
+      mockTasksApiCall().then(setTasks);
+    }
+  }, []);
+
   return (
       <View style={styles.container}>
         {/* Header */}
