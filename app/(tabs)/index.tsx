@@ -1,100 +1,182 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+// src/screens/HomeScreen.tsx
+import React from "react";
+import { View, Text, StyleSheet, FlatList, Image } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+type Deadline = {
+  id: string;
+  title: string;
+  date: string;
+};
+
+type Task = {
+  id: string;
+  name: string;
+  time: string;
+};
+
+const deadlines: Deadline[] = [
+  { id: "1", title: "Math HW", date: "11/01" },
+  { id: "2", title: "Chemistry Project", date: "11/04" },
+];
+
+const tasks: Task[] = [
+  { id: "P", name: "Project", time: "4:00 PM" },
+  { id: "D", name: "Dinner", time: "6:30 PM" },
+];
 
 export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Ionicons name="settings-sharp" size={26} color="#007AFF" />
+          <Text style={styles.headerTitle}>Hi, (username)</Text>
+          <View style={{ width: 26 }} /> {/* spacer for symmetry */}
+        </View>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Navigation</ThemedText>
-        <Link href="/about">
-          <ThemedText type="link">About</ThemedText>
-        </Link>
-        <Link href="/contact">
-          <ThemedText type="link">Contact</ThemedText>
-        </Link>
-        <Link href="/services">
-          <ThemedText type="link">Services</ThemedText>
-        </Link>
-      </ThemedView>
-    </ParallaxScrollView>
+        {/* Deadlines */}
+        <Text style={styles.sectionTitle}>Important Deadlines</Text>
+        {deadlines.map((deadline) => (
+            <View key={deadline.id} style={styles.deadlineCard}>
+              <View>
+                <Text style={styles.deadlineText}>{deadline.title}</Text>
+                <Text style={styles.deadlineDate}>{deadline.date}</Text>
+              </View>
+              <Ionicons name="checkmark" size={20} color="#007AFF" />
+            </View>
+        ))}
+
+        {/* Upcoming Tasks */}
+        <Text style={styles.sectionTitle}>Upcoming Tasks</Text>
+        <FlatList
+            data={tasks}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+                <View style={styles.taskRow}>
+                  <View style={styles.taskAvatar}>
+                    <Text style={styles.taskAvatarText}>{item.id}</Text>
+                  </View>
+                  <Text style={styles.taskName}>{item.name}</Text>
+                  <Text style={styles.taskTime}>{item.time}</Text>
+                </View>
+            )}
+        />
+
+        {/* Priority Habit */}
+        <Text style={styles.sectionTitle}>Priority Habit</Text>
+        <View style={styles.habitCard}>
+          <Image
+              source={{
+                uri: "https://cdn-icons-png.flaticon.com/512/2904/2904972.png",
+              }}
+              style={styles.habitImage}
+          />
+          <View style={{ flex: 1 }}>
+            <Text style={styles.habitTitle}>Meditate</Text>
+            <Text style={styles.habitStatus}>
+              Status: <Text style={{ fontWeight: "600" }}>Complete</Text>
+            </Text>
+            <Text style={styles.habitXP}>+10 XP</Text>
+          </View>
+          <Ionicons name="star" size={24} color="#007AFF" />
+        </View>
+      </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    padding: 20,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginVertical: 10,
+  },
+  deadlineCard: {
+    backgroundColor: "#E8F0FE",
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  deadlineText: {
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  deadlineDate: {
+    fontSize: 14,
+    color: "#555",
+  },
+  taskRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  taskAvatar: {
+    backgroundColor: "#E8F0FE",
+    width: 45,
+    height: 45,
+    borderRadius: 22,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
+  },
+  taskAvatarText: {
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  taskName: {
+    fontSize: 16,
+    fontWeight: "500",
+    flex: 1,
+  },
+  taskTime: {
+    fontWeight: "600",
+  },
+  habitCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 15,
+    borderRadius: 12,
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  habitImage: {
+    width: 70,
+    height: 70,
+    marginRight: 12,
+    borderRadius: 12,
+  },
+  habitTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  habitStatus: {
+    fontSize: 14,
+    marginVertical: 2,
+  },
+  habitXP: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#007AFF",
   },
 });
