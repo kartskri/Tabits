@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type WeeklyProgress = {
     day: string;
@@ -29,7 +30,7 @@ const ProgressScreen = () => {
     }, []);
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
                 <Ionicons name="settings-sharp" size={26} color="#007AFF" />
@@ -105,7 +106,7 @@ const ProgressScreen = () => {
                     <Text style={styles.badgeLabel}>Fast-learner</Text>
                 </View>
             </View>
-        </View>
+        </SafeAreaView>
     );
 };
 

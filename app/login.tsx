@@ -6,8 +6,8 @@ import { ThemedView } from '@/components/themed-view';
 import { useUserStore } from '@/store/userStore';
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('prahladkarthik@outlook.com');
+  const [password, setPassword] = useState('password123');
   const [error, setError] = useState('');
   const { login } = useUserStore();
 

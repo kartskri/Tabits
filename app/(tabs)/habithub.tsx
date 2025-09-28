@@ -12,6 +12,7 @@ import {
     TextInput,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useHabitStore, type Habit } from '@/store/habitStore';
 
 type Suggestion = {
@@ -63,12 +64,16 @@ export default function HabitHubScreen() {
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
                 <Ionicons name="settings-sharp" size={26} color="#007AFF" />
                 <Text style={styles.headerTitle}>Habit Hub</Text>
-                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                <TouchableOpacity 
+                    onPress={() => setModalVisible(true)}
+                    style={styles.addButton}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
                     <Ionicons name="add" size={28} color="#007AFF" />
                 </TouchableOpacity>
             </View>
@@ -146,7 +151,7 @@ export default function HabitHubScreen() {
                     </View>
                 </View>
             </Modal>
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -270,5 +275,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "white",
         fontWeight: "600",
+    },
+    addButton: {
+        padding: 5,
+        minWidth: 44,
+        minHeight: 44,
+        justifyContent: "center",
+        alignItems: "center",
     },
 });

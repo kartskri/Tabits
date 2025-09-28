@@ -2,6 +2,7 @@
 import React from "react";
 import { View, Text, StyleSheet, FlatList, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDeadlineStore } from '@/store/deadlineStore';
 import { useTaskStore } from '@/store/taskStore';
 
@@ -10,7 +11,7 @@ export default function HomeScreen() {
   const { tasks } = useTaskStore();
 
   return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
           <Ionicons name="settings-sharp" size={26} color="#007AFF" />
@@ -64,7 +65,7 @@ export default function HomeScreen() {
           </View>
           <Ionicons name="star" size={24} color="#007AFF" />
         </View>
-      </View>
+      </SafeAreaView>
   );
 }
 

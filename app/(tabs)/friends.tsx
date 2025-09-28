@@ -1,13 +1,14 @@
 import React from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLeaderboardStore } from '@/store/leaderboardStore';
 
 export default function FriendsScreen() {
     const { leaderboard } = useLeaderboardStore();
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Leaderboard</Text>
 
             {/* Profile Avatar */}
@@ -59,7 +60,7 @@ export default function FriendsScreen() {
                     </View>
                 )}
             />
-        </View>
+        </SafeAreaView>
     );
 }
 

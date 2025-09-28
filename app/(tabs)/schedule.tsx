@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Modal, TextInput, TouchableOpacity, FlatList } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDeadlineStore, type Deadline } from '@/store/deadlineStore';
 import { useScheduleStore, type ScheduleItem } from '@/store/scheduleStore';
 
@@ -43,12 +44,16 @@ export default function ScheduleScreen() {
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
                 <Ionicons name="settings-sharp" size={26} color="#007AFF" />
                 <Text style={styles.headerTitle}>Deadlines</Text>
-                <TouchableOpacity onPress={() => setDeadlineModalVisible(true)}>
+                <TouchableOpacity 
+                    onPress={() => setDeadlineModalVisible(true)}
+                    style={styles.headerButton}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
                     <Ionicons name="add" size={28} color="#007AFF" />
                 </TouchableOpacity>
             </View>
@@ -152,7 +157,7 @@ export default function ScheduleScreen() {
                     </View>
                 </View>
             </Modal>
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -284,6 +289,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "white",
         fontWeight: "600",
+    },
+    headerButton: {
+        padding: 5,
+        minWidth: 44,
+        minHeight: 44,
+        justifyContent: "center",
+        alignItems: "center",
     },
     deleteButton: {
         backgroundColor: "#ff4444",
