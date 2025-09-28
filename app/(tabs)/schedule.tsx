@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, FlatList, Modal, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Modal, TextInput, TouchableOpacity, FlatList } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useDeadlineStore, type Deadline } from '@/store/deadlineStore';
 import { useScheduleStore, type ScheduleItem } from '@/store/scheduleStore';
 
 export default function ScheduleScreen() {
     const { deadlines, addDeadline, removeDeadline } = useDeadlineStore();
-    const { schedule, addScheduleItem } = useScheduleStore();
+    const { schedule, addScheduleItem, removeScheduleItem } = useScheduleStore();
     const [modalVisible, setModalVisible] = useState(false);
     const [deadlineModalVisible, setDeadlineModalVisible] = useState(false);
     const [newScheduleName, setNewScheduleName] = useState("");
@@ -75,7 +75,11 @@ export default function ScheduleScreen() {
 
             {/* Schedule List */}
             <FlatList
-                data={schedule}
+                data={schedule.sort((a, b) => {
+                    const timeA = new Date(`1970/01/01 ${a.time}`).getTime();
+                    const timeB = new Date(`1970/01/01 ${b.time}`).getTime();
+                    return timeA - timeB;
+                })}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <View style={styles.scheduleRow}>
@@ -84,6 +88,9 @@ export default function ScheduleScreen() {
                         </View>
                         <Text style={styles.scheduleName}>{item.name}</Text>
                         <Text style={styles.scheduleTime}>{item.time}</Text>
+                        <TouchableOpacity onPress={() => removeScheduleItem(item.id)}>
+                            <Ionicons name="trash" size={20} color="#ff4444" />
+                        </TouchableOpacity>
                     </View>
                 )}
             />
@@ -278,4 +285,12 @@ const styles = StyleSheet.create({
         color: "white",
         fontWeight: "600",
     },
+    deleteButton: {
+        backgroundColor: "#ff4444",
+        justifyContent: "center",
+        alignItems: "center",
+        width: 80,
+        marginBottom: 12,
+    },
+
 });

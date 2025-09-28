@@ -7,6 +7,7 @@ export type Habit = {
   xp: number;
   image: string;
   favorite: boolean;
+  completedDates: string[]; // Array of dates in YYYY-MM-DD format
 };
 
 interface HabitStore {
@@ -15,7 +16,10 @@ interface HabitStore {
   addHabit: (habit: Habit) => void;
   updateHabit: (id: string, updates: Partial<Habit>) => void;
   removeHabit: (id: string) => void;
+  toggleHabitForToday: (id: string) => void;
 }
+
+const getTodayString = () => new Date().toISOString().split('T')[0];
 
 const defaultHabits: Habit[] = [
   {
@@ -25,6 +29,7 @@ const defaultHabits: Habit[] = [
     xp: 10,
     image: "https://cdn-icons-png.flaticon.com/512/2904/2904972.png",
     favorite: true,
+    completedDates: [getTodayString()],
   },
   {
     id: "2",
@@ -33,6 +38,7 @@ const defaultHabits: Habit[] = [
     xp: 5,
     image: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
     favorite: false,
+    completedDates: [],
   },
   {
     id: "3",
@@ -41,6 +47,7 @@ const defaultHabits: Habit[] = [
     xp: 5,
     image: "https://cdn-icons-png.flaticon.com/512/3197/3197980.png",
     favorite: false,
+    completedDates: [getTodayString()],
   },
 ];
 
@@ -55,6 +62,25 @@ export const useHabitStore = create<HabitStore>((set) => ({
       habit.id === id ? { ...habit, ...updates } : habit
     )
   })),
+  toggleHabitForToday: (id) => set((state) => {
+    const today = getTodayString();
+    return {
+      habits: state.habits.map(habit => {
+        if (habit.id === id) {
+          const isCompletedToday = habit.completedDates.includes(today);
+          const newCompletedDates = isCompletedToday
+            ? habit.completedDates.filter(date => date !== today)
+            : [...habit.completedDates, today];
+          return {
+            ...habit,
+            completedDates: newCompletedDates,
+            status: newCompletedDates.includes(today) ? "Complete" : "Incomplete"
+          };
+        }
+        return habit;
+      })
+    };
+  }),
   removeHabit: (id) => set((state) => ({ 
     habits: state.habits.filter(h => h.id !== id) 
   })),

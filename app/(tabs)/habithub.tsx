@@ -34,7 +34,7 @@ const defaultSuggestions: Suggestion[] = [
 ];
 
 export default function HabitHubScreen() {
-    const { habits, addHabit, updateHabit } = useHabitStore();
+    const { habits, addHabit, toggleHabitForToday } = useHabitStore();
     const [suggestions] = useState<Suggestion[]>(defaultSuggestions);
     const [modalVisible, setModalVisible] = useState(false);
     const [newHabitTitle, setNewHabitTitle] = useState("");
@@ -49,6 +49,7 @@ export default function HabitHubScreen() {
                 xp: parseInt(newHabitXP),
                 image: "https://cdn-icons-png.flaticon.com/512/2904/2904972.png",
                 favorite: false,
+                completedDates: [],
             };
             addHabit(newHabit);
             setNewHabitTitle("");
@@ -58,12 +59,7 @@ export default function HabitHubScreen() {
     };
 
     const toggleHabitStatus = (habitId: string) => {
-        const habit = habits.find(h => h.id === habitId);
-        if (habit) {
-            updateHabit(habitId, { 
-                status: habit.status === "Complete" ? "Incomplete" : "Complete" 
-            });
-        }
+        toggleHabitForToday(habitId);
     };
 
     return (
@@ -94,9 +90,9 @@ export default function HabitHubScreen() {
                         </View>
                         <TouchableOpacity onPress={() => toggleHabitStatus(item.id)}>
                             <Ionicons
-                                name={item.status === "Complete" ? "checkmark-circle" : "checkmark-circle-outline"}
+                                name={item.completedDates.includes(new Date().toISOString().split('T')[0]) ? "checkmark-circle" : "checkmark-circle-outline"}
                                 size={24}
-                                color={item.status === "Complete" ? "#00C851" : "#007AFF"}
+                                color={item.completedDates.includes(new Date().toISOString().split('T')[0]) ? "#00C851" : "#007AFF"}
                             />
                         </TouchableOpacity>
                     </View>

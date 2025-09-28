@@ -1,75 +1,61 @@
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
-
-type Friend = {
-    id: string;
-    name: string;
-    streak: string;
-};
-
-const mockFriendsApiCall = (): Promise<Friend[]> => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve([
-                { id: "A", name: "Friend A", streak: "5 days" },
-                { id: "B", name: "Friend B", streak: "2 days" },
-                { id: "C", name: "Friend C", streak: "N/A" },
-            ]);
-        }, 600);
-    });
-};
+import { Ionicons } from "@expo/vector-icons";
+import { useLeaderboardStore } from '@/store/leaderboardStore';
 
 export default function FriendsScreen() {
-    const [friends, setFriends] = useState<Friend[]>([]);
-
-    useEffect(() => {
-        mockFriendsApiCall().then(setFriends);
-    }, []);
+    const { leaderboard } = useLeaderboardStore();
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>My Profile</Text>
+            <Text style={styles.title}>Leaderboard</Text>
 
             {/* Profile Avatar */}
             <View style={styles.avatar}>
-                <Text style={styles.avatarText}>P</Text>
+                <Text style={styles.avatarText}>🏆</Text>
             </View>
 
             {/* Stats Row */}
             <View style={styles.statsRow}>
                 <View style={styles.statBox}>
-                    <Text style={styles.statNumber}>3</Text>
-                    <Text style={styles.statLabel}>Friends</Text>
+                    <Text style={styles.statNumber}>1st</Text>
+                    <Text style={styles.statLabel}>Your Rank</Text>
                 </View>
                 <View style={styles.statBox}>
-                    <Text style={styles.statNumber}>2</Text>
-                    <Text style={styles.statLabel}>Friend Streaks</Text>
+                    <Text style={styles.statNumber}>850</Text>
+                    <Text style={styles.statLabel}>Your Score</Text>
                 </View>
                 <View style={styles.statBox}>
-                    <Text style={styles.statNumber}>5 days</Text>
-                    <Text style={styles.statLabel}>Max Streak</Text>
+                    <Text style={styles.statNumber}>5</Text>
+                    <Text style={styles.statLabel}>Total Users</Text>
                 </View>
             </View>
 
-            {/* Friends List */}
-            <Text style={styles.subtitle}>Friends</Text>
+            {/* Leaderboard List */}
+            <Text style={styles.subtitle}>Rankings</Text>
             <FlatList
-                data={friends}
+                data={leaderboard}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                    <View style={styles.friendRow}>
-                        <View style={styles.friendAvatar}>
-                            <Text style={styles.friendAvatarText}>{item.id}</Text>
+                    <View style={[styles.friendRow, item.rank === 1 && styles.topRank]}>
+                        <View style={[styles.friendAvatar, item.rank === 1 && styles.goldAvatar]}>
+                            <Text style={styles.friendAvatarText}>#{item.rank}</Text>
                         </View>
-                        <View>
-                            <Text style={styles.friendName}>{item.name}</Text>
+                        <View style={styles.userInfo}>
+                            <Text style={[styles.friendName, item.name === "You" && styles.currentUser]}>
+                                {item.name}
+                            </Text>
                             <Text style={styles.friendStreak}>
-                                Friend Streak: {item.streak}
+                                Score: {item.score}
                             </Text>
                         </View>
+                        {item.rank <= 3 && (
+                            <Ionicons 
+                                name={item.rank === 1 ? "trophy" : "medal"} 
+                                size={20} 
+                                color={item.rank === 1 ? "#FFD700" : item.rank === 2 ? "#C0C0C0" : "#CD7F32"} 
+                            />
+                        )}
                     </View>
                 )}
             />
@@ -149,5 +135,20 @@ const styles = StyleSheet.create({
     friendStreak: {
         fontSize: 12,
         color: "#555",
+    },
+    topRank: {
+        backgroundColor: "#FFF9E6",
+        borderRadius: 8,
+        padding: 12,
+    },
+    goldAvatar: {
+        backgroundColor: "#FFD700",
+    },
+    currentUser: {
+        fontWeight: "bold",
+        color: "#007AFF",
+    },
+    userInfo: {
+        flex: 1,
     },
 });
