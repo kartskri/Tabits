@@ -65,14 +65,16 @@ export default function HomeScreen() {
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
+        <ThemedText type="subtitle">Navigation</ThemedText>
+        <Link href="/about">
+          <ThemedText type="link">About</ThemedText>
+        </Link>
+        <Link href="/contact">
+          <ThemedText type="link">Contact</ThemedText>
+        </Link>
+        <Link href="/services">
+          <ThemedText type="link">Services</ThemedText>
+        </Link>
       </ThemedView>
     </ParallaxScrollView>
   );
